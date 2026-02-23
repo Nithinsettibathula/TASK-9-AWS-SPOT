@@ -28,7 +28,7 @@ jobs:
           ECR_REPOSITORY: nithin-strapi-repo
           IMAGE_TAG: latest
         run: |
-          # Explicitly pointing to the Dockerfile to avoid 'file not found' errors
+          # Strapi-app లోపల ఉన్న Dockerfile ని స్పష్టంగా చూపిస్తున్నాం
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./strapi-app/Dockerfile ./strapi-app
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 

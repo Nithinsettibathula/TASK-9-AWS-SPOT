@@ -22,8 +22,9 @@ data "aws_subnets" "default" {
   }
 }
 
+# Duplicate error రాకుండా పేరు మార్చాను
 resource "aws_security_group" "strapi_sg" {
-  name        = "nithin-strapi-sg-task9"
+  name        = "nithin-strapi-sg-task9-v2" 
   description = "Strapi traffic for Task 9"
   vpc_id      = data.aws_vpc.default.id
 
