@@ -11,7 +11,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# 1. Network Discovery (Using Default VPC)
 data "aws_vpc" "default" {
   default = true
 }
@@ -23,7 +22,6 @@ data "aws_subnets" "default" {
   }
 }
 
-# 2. Security Group (Clean description for Task 9)
 resource "aws_security_group" "strapi_sg" {
   name        = "nithin-strapi-sg-task9"
   description = "Strapi traffic for Task 9"
@@ -44,12 +42,10 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
-# 3. ECS Cluster
 resource "aws_ecs_cluster" "strapi_cluster" {
   name = "nithin-strapi-cluster-task9"
 }
 
-# 4. Fargate Spot Capacity Provider
 resource "aws_ecs_cluster_capacity_providers" "provider" {
   cluster_name       = aws_ecs_cluster.strapi_cluster.name
   capacity_providers = ["FARGATE_SPOT"]
@@ -60,7 +56,6 @@ resource "aws_ecs_cluster_capacity_providers" "provider" {
   }
 }
 
-# 5. Task Definition (No CloudWatch Log Configuration)
 resource "aws_ecs_task_definition" "strapi_task" {
   family                   = "nithin-strapi-task9"
   network_mode             = "awsvpc"
@@ -68,7 +63,6 @@ resource "aws_ecs_task_definition" "strapi_task" {
   cpu                      = "512"
   memory                   = "1024"
   
-  # Using organization provided role
   execution_role_arn       = "arn:aws:iam::811738710312:role/ecs_fargate_taskRole"
   task_role_arn            = "arn:aws:iam::811738710312:role/ecs_fargate_taskRole"
 
@@ -80,11 +74,9 @@ resource "aws_ecs_task_definition" "strapi_task" {
       containerPort = 1337
       hostPort      = 1337
     }]
-    # CloudWatch logging removed as per Task 9 instructions
   }])
 }
 
-# 6. ECS Service (Fargate Spot)
 resource "aws_ecs_service" "strapi_service" {
   name            = "nithin-strapi-service-task9"
   cluster         = aws_ecs_cluster.strapi_cluster.id
