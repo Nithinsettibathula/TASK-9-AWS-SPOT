@@ -28,6 +28,7 @@ jobs:
           ECR_REPOSITORY: nithin-strapi-repo
           IMAGE_TAG: latest
         run: |
+          # The fix is here: we tell Docker to look in the strapi-app folder
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./strapi-app
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
