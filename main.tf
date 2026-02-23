@@ -11,6 +11,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# 1. Network Data Sources (Using Default VPC)
 data "aws_vpc" "default" {
   default = true
 }
@@ -22,10 +23,10 @@ data "aws_subnets" "default" {
   }
 }
 
-# Duplicate error రాకుండా పేరు మార్చాను
+# 2. Security Group (Renamed to v3 to avoid duplicate errors)
 resource "aws_security_group" "strapi_sg" {
-  name        = "nithin-strapi-sg-task9-v2" 
-  description = "Strapi traffic for Task 9"
+  name        = "nithin-strapi-sg-task9-v3"
+  description = "Security Group for Strapi Task 9"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -43,10 +44,12 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
+# 3. ECS Cluster
 resource "aws_ecs_cluster" "strapi_cluster" {
   name = "nithin-strapi-cluster-task9"
 }
 
+# 4. Capacity Provider Strategy (Enabling FARGATE_SPOT)
 resource "aws_ecs_cluster_capacity_providers" "provider" {
   cluster_name       = aws_ecs_cluster.strapi_cluster.name
   capacity_providers = ["FARGATE_SPOT"]
@@ -57,13 +60,15 @@ resource "aws_ecs_cluster_capacity_providers" "provider" {
   }
 }
 
+# 5. Task Definition (Renamed family to v2)
 resource "aws_ecs_task_definition" "strapi_task" {
-  family                   = "nithin-strapi-task9"
+  family                   = "nithin-strapi-task9-v2"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "512"
   memory                   = "1024"
   
+  # Using the specific role provided by Pearl Thoughts
   execution_role_arn       = "arn:aws:iam::811738710312:role/ecs_fargate_taskRole"
   task_role_arn            = "arn:aws:iam::811738710312:role/ecs_fargate_taskRole"
 
@@ -78,8 +83,9 @@ resource "aws_ecs_task_definition" "strapi_task" {
   }])
 }
 
+# 6. ECS Service (Renamed to v2 to fix Idempotency error)
 resource "aws_ecs_service" "strapi_service" {
-  name            = "nithin-strapi-service-task9"
+  name            = "nithin-strapi-service-task9-v2"
   cluster         = aws_ecs_cluster.strapi_cluster.id
   task_definition = aws_ecs_task_definition.strapi_task.arn
   desired_count   = 1
